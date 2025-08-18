@@ -1,4 +1,4 @@
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "generateErrors") {
     for (let i = 0; i < 100; i++) {
       setTimeout(() => {
@@ -9,10 +9,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           Math.random() * 100
         )})`;
 
-        // Show in console
         console.error(error);
 
-        // Dispatch error event
         window.dispatchEvent(
           new ErrorEvent("error", {
             message: error.message,
@@ -23,7 +21,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           })
         );
 
-        // Also trigger global error handler
         if (window.onerror) {
           window.onerror(
             error.message,

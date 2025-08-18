@@ -1,10 +1,10 @@
 {
-  "manifest_version": 3,
-  "name": "Error Generator on client side",
+  "manifest_version": 2,
+  "name": "Error Generator for Datadog",
   "version": "1.0.0",
-  "description": "Generates errors on client side for testing purposes",
+  "description": "Generates errors for Datadog RUM monitoring",
   "permissions": ["activeTab"],
-  "action": {
+  "browser_action": {
     "default_popup": "popup.html",
     "default_title": "Error Generator"
   },
@@ -13,5 +13,10 @@
       "matches": ["<all_urls>"],
       "js": ["content.js"]
     }
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "error-generator@datadog.com"
+    }
+  }
 }

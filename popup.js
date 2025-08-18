@@ -1,12 +1,12 @@
 document
   .getElementById("generateErrors")
   .addEventListener("click", async () => {
-    const [tab] = await chrome.tabs.query({
+    const [tab] = await browser.tabs.query({
       active: true,
       currentWindow: true,
     });
 
-    chrome.tabs.sendMessage(tab.id, { action: "generateErrors" });
+    browser.tabs.sendMessage(tab.id, { action: "generateErrors" });
 
     document.getElementById("status").textContent = "Generating 100 errors...";
 
