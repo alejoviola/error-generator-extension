@@ -1,25 +1,17 @@
-browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
+const api = typeof browser !== "undefined" ? browser : chrome;
+
+console.log("Content script loaded successfully");
+
+api.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log("Message received:", request);
+
   if (request.action === "generateErrors") {
+    console.log("Generating 100 errors...");
+
     for (let i = 0; i < 100; i++) {
       setTimeout(() => {
         const error = new Error("Probando, hola me escuchan.");
-        error.stack = `Error: Probando, hola me escuchan.\n    at <anonymous> (${
-          window.location.href
-        }:${Math.floor(Math.random() * 1000)}:${Math.floor(
-          Math.random() * 100
-        )})`;
-
-        console.error(error);
-
-        window.dispatchEvent(
-          new ErrorEvent("error", {
-            message: error.message,
-            error: error,
-            filename: window.location.href,
-            lineno: Math.floor(Math.random() * 1000),
-            colno: Math.floor(Math.random() * 100),
-          })
-        );
+        console.error("Generated error:", error);
 
         if (window.onerror) {
           window.onerror(
@@ -32,5 +24,9 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
         }
       }, i * 10);
     }
+
+    sendResponse({ success: true });
   }
 });
+
+console.log("Content script setup complete");

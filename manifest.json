@@ -1,17 +1,19 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Error Generator for Datadog",
   "version": "1.0.0",
   "description": "Generates errors for Datadog RUM monitoring",
-  "permissions": ["activeTab"],
-  "browser_action": {
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
     "default_popup": "popup.html",
     "default_title": "Error Generator"
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "js": ["content.js"],
+      "run_at": "document_end"
     }
   ],
   "browser_specific_settings": {
