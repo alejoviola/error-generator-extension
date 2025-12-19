@@ -8,19 +8,19 @@ document
         currentWindow: true,
       });
 
-      console.log("Sending message to tab:", tab.id);
+      console.log("Generating errors in tab:", tab.id);
 
       try {
-        const response = await api.tabs.sendMessage(tab.id, {
-          action: "generateErrors",
-        });
-        console.log("Response received:", response);
-      } catch (messageError) {
-        console.log("Content script not available, using scripting API");
-
         await api.scripting.executeScript({
           target: { tabId: tab.id },
-          func: generateErrors,
+          world: "MAIN",
+          func: generateErrorsInPage,
+        });
+      } catch (scriptError) {
+        console.log("Using DOM injection method");
+        await api.scripting.executeScript({
+          target: { tabId: tab.id },
+          func: injectErrorsViaDOM,
         });
       }
 
@@ -37,23 +37,34 @@ document
     }
   });
 
-function generateErrors() {
-  console.log("Generating 100 errors via scripting API...");
+function generateErrorsInPage() {
+  console.log("Generating 100 errors in page context...");
 
   for (let i = 0; i < 100; i++) {
     setTimeout(() => {
       const error = new Error("Probando, hola me escuchan.");
-      console.error("Generated error:", error);
+      console.error("Generated error in page:", error);
 
-      if (window.onerror) {
-        window.onerror(
-          error.message,
-          window.location.href,
-          Math.floor(Math.random() * 1000),
-          Math.floor(Math.random() * 100),
-          error
-        );
-      }
+      // This will be captured by Datadog RUM
+      throw error;
     }, i * 10);
   }
+}
+
+function injectErrorsViaDOM() {
+  console.log("Injecting errors via DOM...");
+
+  const script = document.createElement("script");
+  script.textContent = `
+    for (let i = 0; i < 100; i++) {
+      setTimeout(() => {
+        const error = new Error("Probando, hola me escuchan.");
+        console.error("Generated error via DOM:", error);
+        throw error;
+      }, i * 10);
+    }
+  `;
+
+  document.head.appendChild(script);
+  document.head.removeChild(script);
 }
